@@ -1,4 +1,5 @@
-import {Hooks, PluginRegistry} from '../../plugins/registry'
+import {Hooks} from '../../plugins'
+import {PluginRegistry} from '../../plugins/registry'
 import {Context} from '../../types'
 
 class A implements Hooks {}

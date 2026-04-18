@@ -1,6 +1,6 @@
 import {Block, Context} from '../types'
 import {Attempt} from '../types/attempt'
-import {Hooks} from './registry'
+import {Hooks} from '.'
 
 export class PluginManager {
   constructor(private readonly _hooks: Hooks[]) {}

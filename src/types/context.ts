@@ -1,4 +1,6 @@
 import {SourceData} from './core/source-data'
 import {Project} from './project'
 
-export type Context<T = SourceData> = {}
+export type Context<T = SourceData> = {
+  package?: string
+}

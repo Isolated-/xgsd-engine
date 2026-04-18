@@ -1,5 +1,5 @@
 import {PluginManager} from '../../plugins'
-import {Hooks} from '../../plugins/registry'
+import {Hooks} from '../../plugins'
 
 test('runs hooks in order', async () => {
   const calls: string[] = []

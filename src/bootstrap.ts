@@ -11,8 +11,9 @@ export const runProject = async <T = SourceData>(data: T, project: Project, even
     stream: event,
   }) as Context<T>
 
-  const {pluginManager, executor} = await createRuntime(ctx)
+  const {pluginManager, loggerManager, executor} = await createRuntime(ctx)
 
+  attachPluginEventListeners(loggerManager, ctx)
   attachPluginEventListeners(pluginManager, ctx)
 
   const orchestrator = new Orchestrator<T>(ctx, executor as Executor<T>)

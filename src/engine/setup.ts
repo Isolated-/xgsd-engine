@@ -1,5 +1,8 @@
 import {Executor} from '../generics/executor'
-import {PluginRegistry, PluginInput, PluginManager} from '../plugins'
+import {Logger} from '../generics/logger'
+import {LoggerManager} from '../loggers/manager'
+import {LoggerRegistry} from '../loggers/registry'
+import {PluginRegistry, PluginInput, PluginManager, Hooks} from '../plugins'
 import {Context} from '../types'
 import {Factory, FactoryInput} from '../types/core/factory'
 import {DefaultExecutor} from './executors/default'
@@ -24,11 +27,15 @@ export const createRuntime = async (
   // call setup() in user code:
   await userSetupFn(ctx, setupContainer)
 
-  const {pluginManager, executor} = setupContainer.build(ctx)
-  return {pluginManager, executor}
+  const {pluginManager, loggerManager, executor} = setupContainer.build(ctx)
+  return {pluginManager, loggerManager, executor}
 }
 
 export const resolveExecutor = (input: ExecutorInput) => {
+  return resolveFactory(input)
+}
+
+export const resolveFactory = <T = unknown>(input: FactoryInput<T>) => {
   if (typeof input === 'function') {
     return (ctx: Context) => {
       try {
@@ -42,30 +49,58 @@ export const resolveExecutor = (input: ExecutorInput) => {
   return () => input
 }
 
+export const buildFactories = <T = unknown>(factories: Factory<T>[], ctx: Context) => {
+  // this fixes user errors like:
+  // xgsd.use((ctx) => {}) (no returns)
+  // by dropping the plugin before its registered
+  return factories
+    .map((f) => {
+      try {
+        return f(ctx)
+      } catch {
+        return undefined
+      }
+    })
+    .filter((factory): factory is T => !!factory)
+}
+
 export type ExecutorFactory = Factory<Executor>
 export type ExecutorInput = FactoryInput<Executor>
 
-export class SetupContainer {
-  private registry!: PluginRegistry
-  private executorFactory?: ExecutorFactory
+export type LoggerFactory = Factory<Logger>
+export type LoggerInput = FactoryInput<Logger>
 
-  constructor(registry?: PluginRegistry) {
-    this.registry = registry || new PluginRegistry()
+export class SetupContainer {
+  private plugins!: PluginRegistry
+  private loggers!: LoggerRegistry
+
+  private executorFactory?: ExecutorFactory
+  constructor(plugins?: PluginRegistry, loggers?: LoggerRegistry) {
+    this.plugins = plugins || new PluginRegistry()
+    this.loggers = loggers || new LoggerRegistry()
   }
 
   use(plugin: PluginInput) {
-    this.registry.use(plugin)
+    this.plugins.use(plugin)
   }
 
   executor(input: ExecutorInput) {
     this.executorFactory = resolveExecutor(input)
   }
 
-  build(context: Context): {pluginManager: PluginManager; executor: Executor} {
+  logger(logger: LoggerInput) {
+    this.loggers.use(logger)
+  }
+
+  build(context: Context): {pluginManager: PluginManager; loggerManager: LoggerManager; executor: Executor} {
     const executor = this.executorFactory ? this.executorFactory(context) : new DefaultExecutor()
 
+    const pluginManager = new PluginManager(this.plugins.build(context))
+    const loggerManager = new LoggerManager(this.loggers.build(context))
+
     return {
-      pluginManager: new PluginManager(this.registry.build(context)),
+      pluginManager,
+      loggerManager,
       executor,
     }
   }

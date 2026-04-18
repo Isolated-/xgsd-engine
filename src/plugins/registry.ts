@@ -1,4 +1,5 @@
 import {Hooks, PluginFactory, PluginInput} from '.'
+import {buildFactories, resolveFactory} from '../engine/setup'
 import {Registry} from '../generics/registry'
 import {Block, Context, Project} from '../types'
 import {Attempt} from '../types/attempt'
@@ -11,32 +12,10 @@ export class PluginRegistry implements Registry<PluginFactory, Context, Hooks[]>
   private factories: ((ctx: Context) => Hooks)[] = []
 
   use(input: PluginInput) {
-    if (typeof input === 'function') {
-      this.factories.push((ctx) => {
-        try {
-          return new (input as any)(ctx)
-        } catch {
-          return (input as PluginFactory)(ctx)
-        }
-      })
-      return
-    }
-
-    this.factories.push(() => input)
+    this.factories.push(resolveFactory(input))
   }
 
   build(ctx: Context): Hooks[] {
-    // this fixes user errors like:
-    // xgsd.use((ctx) => {}) (no returns)
-    // by dropping the plugin before its registered
-    return this.factories
-      .map((f) => {
-        try {
-          return f(ctx)
-        } catch {
-          return undefined
-        }
-      })
-      .filter((hook): hook is Hooks => !!hook)
+    return buildFactories(this.factories, ctx)
   }
 }

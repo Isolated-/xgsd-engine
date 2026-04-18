@@ -1,8 +1,9 @@
 import {Block, Context} from '../types'
 import {Attempt} from '../types/attempt'
 import {Hooks} from '.'
+import {Manager} from '../generics/manager'
 
-export class PluginManager {
+export class PluginManager implements Manager {
   constructor(private readonly _hooks: Hooks[]) {}
 
   async emit(event: any, ...args: any[]): Promise<void> {
@@ -36,12 +37,12 @@ const EVENT_MAP = {
 } as const
 
 /**
- *  Attaches listeners for incoming events used by Plugins
+ *  Attaches listeners for incoming events used by Plugins, Loggers and other Managers
  *
  *  @param {PluginManager} manager
  *  @param {ProjectContext} context
  */
-export const attachPluginEventListeners = (manager: PluginManager, context: Context) => {
+export const attachPluginEventListeners = (manager: Manager, context: Context) => {
   const formattedContext = context
 
   for (const [event, handler] of Object.entries(EVENT_MAP)) {

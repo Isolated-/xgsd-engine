@@ -1,6 +1,7 @@
 import {Executor} from '../generics/executor'
 import {PluginRegistry, PluginInput, PluginManager} from '../plugins'
 import {Context} from '../types'
+import {Factory, FactoryInput} from '../types/core/factory'
 import {DefaultExecutor} from './executors/default'
 
 export const loadUserSetup = async (context: Context, setup: SetupContainer) => {
@@ -41,8 +42,8 @@ export const resolveExecutor = (input: ExecutorInput) => {
   return () => input
 }
 
-export type ExecutorFactory = (ctx: Context) => Executor
-export type ExecutorInput = Executor | ExecutorFactory | (new (ctx: Context) => Executor)
+export type ExecutorFactory = Factory<Executor>
+export type ExecutorInput = FactoryInput<Executor>
 
 export class SetupContainer {
   private registry!: PluginRegistry

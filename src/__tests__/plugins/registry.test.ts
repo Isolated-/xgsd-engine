@@ -1,8 +1,11 @@
-import {PluginRegistry} from '../../plugins/registry'
+import {Hooks, PluginRegistry} from '../../plugins/registry'
 import {Context} from '../../types'
 
+class A implements Hooks {}
+class B implements Hooks {}
+class C implements Hooks {}
+
 test('.use() accepts factory-style creation', () => {
-  class A {}
   const factory = (ctx: Context) => new A()
   const registry = new PluginRegistry()
 
@@ -13,7 +16,6 @@ test('.use() accepts factory-style creation', () => {
 })
 
 test('.use() accepts class creation (uninitialised)', () => {
-  class A {}
   const registry = new PluginRegistry()
 
   registry.use(A)
@@ -23,18 +25,42 @@ test('.use() accepts class creation (uninitialised)', () => {
 })
 
 test('.use() accepts class creation (initialised)', () => {
-  class A {}
   const registry = new PluginRegistry()
 
   registry.use(new A())
 
   const hooks = registry.build({})
   expect(hooks).toHaveLength(1)
+
+  expect(hooks).toEqual([expect.any(A)])
+})
+
+test('.use() preserves order', () => {
+  const registry = new PluginRegistry()
+
+  registry.use(new A())
+  registry.use(new B())
+  registry.use(new C())
+
+  const hooks = registry.build({})
+  expect(hooks).toEqual([expect.any(A), expect.any(B), expect.any(C)])
+})
+
+test(".use() doesn't re-create instances", () => {
+  const instance = new A()
+  const registry = new PluginRegistry()
+
+  registry.use(new A())
+  registry.use(instance)
+  registry.use(new B())
+
+  const hooks = registry.build({})
+  expect(hooks).toEqual([expect.any(A), instance, expect.any(B)])
 })
 
 test('.use doesnt register undefined plugins when no return value is provided (factory style)', () => {
   const context = {} as any
-  const registry = new PluginRegistry()
+  const registry = new PluginRegistry() as any
 
   // when no return value is provided with factory style construction
   // the plugin would still be added to _hooks

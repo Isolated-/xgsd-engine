@@ -1,15 +1,25 @@
-import {Context, Project} from '../types'
+import {Registry} from '../generics/registry'
+import {Block, Context, Project} from '../types'
+import {Attempt} from '../types/attempt'
 
-export interface Registry<I = unknown, C = unknown, R = unknown> {
-  use(input: I): void
-  build(ctx: C): R
+export interface Hooks {
+  projectStart?(ctx: Context): Promise<void>
+  projectEnd?(ctx: Context): Promise<void>
+
+  blockStart?(ctx: Context, block: Block): Promise<void>
+  blockEnd?(ctx: Context, block: Block): Promise<void>
+  blockWait?(ctx: Context, block: Block): Promise<void>
+  blockSkip?(ctx: Context, block: Block): Promise<void>
+  blockRetry?(ctx: Context, block: Block, attempt: Attempt): Promise<void>
 }
-
-export interface Hooks {}
 
 export type PluginInput = Hooks | PluginFactory | (new (ctx: Context) => Hooks)
 export type PluginFactory = (ctx: Context) => Hooks
 
+/**
+ *  Lightweight plugin registry
+ *  for internal and user plugin registration
+ */
 export class PluginRegistry implements Registry<PluginFactory, Context, Hooks[]> {
   private factories: ((ctx: Context) => Hooks)[] = []
 

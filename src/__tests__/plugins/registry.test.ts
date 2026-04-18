@@ -1,6 +1,6 @@
 import {Hooks} from '../../plugins'
 import {PluginRegistry} from '../../plugins/registry'
-import {Context} from '../../types'
+import {Context, createContext} from '../../types'
 
 class A implements Hooks {}
 class B implements Hooks {}
@@ -12,7 +12,9 @@ test('.use() accepts factory-style creation', () => {
 
   registry.use(factory)
 
-  const hooks = registry.build({})
+  const ctx = createContext({})
+
+  const hooks = registry.build(ctx)
   expect(hooks).toHaveLength(1)
 })
 
@@ -21,7 +23,8 @@ test('.use() accepts class creation (uninitialised)', () => {
 
   registry.use(A)
 
-  const hooks = registry.build({})
+  const ctx = createContext({})
+  const hooks = registry.build(ctx)
   expect(hooks).toHaveLength(1)
 })
 
@@ -30,7 +33,8 @@ test('.use() accepts class creation (initialised)', () => {
 
   registry.use(new A())
 
-  const hooks = registry.build({})
+  const ctx = createContext({})
+  const hooks = registry.build(ctx)
   expect(hooks).toHaveLength(1)
 
   expect(hooks).toEqual([expect.any(A)])
@@ -43,7 +47,8 @@ test('.use() preserves order', () => {
   registry.use(new B())
   registry.use(new C())
 
-  const hooks = registry.build({})
+  const ctx = createContext({})
+  const hooks = registry.build(ctx)
   expect(hooks).toEqual([expect.any(A), expect.any(B), expect.any(C)])
 })
 
@@ -55,12 +60,13 @@ test(".use() doesn't re-create instances", () => {
   registry.use(instance)
   registry.use(new B())
 
-  const hooks = registry.build({})
+  const ctx = createContext({})
+  const hooks = registry.build(ctx)
   expect(hooks).toEqual([expect.any(A), instance, expect.any(B)])
 })
 
 test('.use doesnt register undefined plugins when no return value is provided (factory style)', () => {
-  const context = {} as any
+  const ctx = createContext({})
   const registry = new PluginRegistry() as any
 
   // when no return value is provided with factory style construction
@@ -69,6 +75,6 @@ test('.use doesnt register undefined plugins when no return value is provided (f
   registry.use((ctx: any) => {})
 
   // expected behaviour is an empty array of hooks:
-  const hooks = registry.build(context)
+  const hooks = registry.build(ctx)
   expect(hooks).toHaveLength(0)
 })

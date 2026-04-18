@@ -10,6 +10,49 @@ export class PluginManager {
   }
 }
 
+export enum ProjectEvent {
+  Started = 'project.started',
+  Ended = 'project.ended',
+}
+
+export enum BlockEvent {
+  Started = 'block.started',
+  Ended = 'block.ended',
+  Failed = 'block.failed',
+  Retrying = 'block.retrying',
+  Skipped = 'block.skipped',
+  Waiting = 'block.waiting',
+  Error = 'block.error',
+}
+
+const EVENT_MAP = {
+  [ProjectEvent.Started]: 'projectStart',
+  [ProjectEvent.Ended]: 'projectEnd',
+  [BlockEvent.Started]: 'blockStart',
+  [BlockEvent.Ended]: 'blockEnd',
+  [BlockEvent.Retrying]: 'blockRetry',
+  [BlockEvent.Skipped]: 'blockSkip',
+  [BlockEvent.Waiting]: 'blockWait',
+} as const
+
+/**
+ *  Attaches listeners for incoming events used by Plugins
+ *
+ *  @param {PluginManager} manager
+ *  @param {ProjectContext} context
+ */
+export const attachPluginEventListeners = (manager: PluginManager, context: Context) => {
+  const formattedContext = context
+
+  for (const [event, handler] of Object.entries(EVENT_MAP)) {
+    context.stream!.on(event, async (e: any) => {
+      const payload = e.payload || {}
+
+      await manager.emit(handler as InvokeFn, formattedContext, payload.step, payload.attempt)
+    })
+  }
+}
+
 const ctxOnly = (ctx: Context) => [ctx]
 const ctxBlock = (ctx: Context, block?: Block) => [ctx, block]
 

@@ -1,5 +1,25 @@
 import {PluginManager} from '../../plugins'
 import {Hooks} from '../../plugins'
+import {attachPluginEventListeners, BlockEvent, ProjectEvent} from '../../plugins/manager'
+
+test('attachPluginEventListeners()', async () => {
+  const onMock = jest.fn()
+  const context = {
+    stream: {on: onMock},
+  } as any
+
+  const manager = new PluginManager([])
+  attachPluginEventListeners(manager, context)
+
+  expect(onMock).toHaveBeenCalledWith(ProjectEvent.Started, expect.any(Function))
+  expect(onMock).toHaveBeenCalledWith(ProjectEvent.Ended, expect.any(Function))
+
+  expect(onMock).toHaveBeenCalledWith(BlockEvent.Started, expect.any(Function))
+  expect(onMock).toHaveBeenCalledWith(BlockEvent.Ended, expect.any(Function))
+  expect(onMock).toHaveBeenCalledWith(BlockEvent.Retrying, expect.any(Function))
+  expect(onMock).toHaveBeenCalledWith(BlockEvent.Skipped, expect.any(Function))
+  expect(onMock).toHaveBeenCalledWith(BlockEvent.Waiting, expect.any(Function))
+})
 
 test('runs hooks in order', async () => {
   const calls: string[] = []

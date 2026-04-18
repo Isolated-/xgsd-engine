@@ -2,7 +2,7 @@ import {DefaultExecutor} from '../../engine/executors/default'
 import {createRuntime, resolveExecutor, SetupContainer} from '../../engine/setup'
 import {Executor} from '../../generics/executor'
 import {Hooks, PluginManager} from '../../plugins'
-import {Block, Context} from '../../types'
+import {Block, Context, createContext} from '../../types'
 
 class CorePlugin implements Hooks {}
 
@@ -14,9 +14,10 @@ test('createRuntime()', async () => {
   })
 
   const userCodeFn = jest.fn()
+  const ctx = createContext({})
 
   const {pluginManager, executor} = await createRuntime(
-    {},
+    ctx,
     [CorePlugin],
     {
       use,
@@ -29,7 +30,7 @@ test('createRuntime()', async () => {
   expect(use).toHaveBeenCalledWith(CorePlugin)
 
   expect(build).toHaveBeenCalledTimes(1)
-  expect(build).toHaveBeenCalledWith({})
+  expect(build).toHaveBeenCalledWith(ctx)
 
   expect(userCodeFn).toHaveBeenCalledTimes(1)
 
@@ -44,6 +45,8 @@ test('resolveExecutor()', () => {
     }
   }
 
+  const ctx = createContext({})
+
   let result = resolveExecutor(MyExecutor)
   expect(result).toEqual(expect.any(Function))
 
@@ -53,7 +56,7 @@ test('resolveExecutor()', () => {
   result = resolveExecutor((_) => new MyExecutor())
   expect(result).toEqual(expect.any(Function))
 
-  expect(result({})).toBeInstanceOf(MyExecutor)
+  expect(result(ctx)).toBeInstanceOf(MyExecutor)
 })
 
 describe('SetupContainer', () => {
@@ -63,7 +66,8 @@ describe('SetupContainer', () => {
 
     setup.use(A)
 
-    const result = setup.build({})
+    const ctx = createContext({})
+    const result = setup.build(ctx)
 
     expect(result.pluginManager).toBeInstanceOf(PluginManager)
     expect(result.executor).toBeInstanceOf(DefaultExecutor)
@@ -79,7 +83,8 @@ describe('SetupContainer', () => {
     const setup = new SetupContainer()
     setup.executor(CustomExecutor)
 
-    const result = setup.build({})
+    const ctx = createContext({})
+    const result = setup.build(ctx)
     expect(result.executor).toBeInstanceOf(CustomExecutor)
   })
 })

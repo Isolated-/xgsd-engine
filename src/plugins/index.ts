@@ -1,10 +1,11 @@
 import {Block, Context, Attempt} from '../types'
+import {Factory, FactoryInput} from '../types/core/factory'
 
 export {PluginManager} from './manager'
 export {PluginRegistry} from './registry'
 
-export type PluginInput = Hooks | PluginFactory | (new (ctx: Context) => Hooks)
-export type PluginFactory = (ctx: Context) => Hooks
+export type PluginFactory = Factory<Hooks>
+export type PluginInput = FactoryInput<Hooks>
 
 export interface Hooks {
   projectStart?(ctx: Context): Promise<void>

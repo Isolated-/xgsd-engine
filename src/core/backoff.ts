@@ -25,4 +25,4 @@ export const getBackoffStrategy = (strategy: string) => {
   return strategyMap[strategy] || exponentialBackoff
 }
 
-export const DEFAULT_BACKOFF_STRATEGY = getBackoffStrategy('linear')
+export const DEFAULT_BACKOFF_STRATEGY = exponentialBackoff

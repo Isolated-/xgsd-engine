@@ -5,6 +5,8 @@
     "strict": true,
     "rootDir": "./src",
     "outDir": "dist",
-    "types": ["jest", "node"]
-  }
+    "types": ["jest", "node"],
+    "declaration": true
+  },
+  "exclude": ["**/*.test.ts", "jest.config.ts"]
 }

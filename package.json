@@ -1,32 +1,29 @@
 {
   "name": "xgsd-core",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "version": "1.0.0",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
-  "devDependencies": {
-    "@eslint/compat": "^1",
-    "@oclif/prettier-config": "^0.2.1",
-    "@types/jest": "^30.0.0",
-    "eslint": "^9",
-    "eslint-config-oclif": "^6",
-    "eslint-config-prettier": "^10",
-    "jest": "^30.3.0",
-    "shx": "^0.4.0",
-    "ts-jest": "^29.4.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "dev": "tsc -w",
     "test": "jest"
   },
-  "dependencies": {
-    "eventemitter2": "^6.4.9"
+  "devDependencies": {
+    "@types/jest": "^29.x",
+    "jest": "^29.x",
+    "ts-jest": "^29.x",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.x"
   }
 }

@@ -8,5 +8,5 @@
     "types": ["jest", "node"],
     "declaration": true
   },
-  "exclude": ["**/*.test.ts", "jest.config.ts"]
+  "exclude": ["jest.config.ts"]
 }

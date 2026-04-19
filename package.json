@@ -1,7 +1,7 @@
 {
   "name": "@xgsd/engine",
   "description": "lightweight execution/orchestration library used by xGSD apps",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -29,5 +29,8 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
     "typescript": "^5.x"
+  },
+  "dependencies": {
+    "deepmerge": "^4.3.1"
   }
 }

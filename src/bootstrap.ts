@@ -1,6 +1,6 @@
 import {EventEmitter2} from 'eventemitter2'
 import {Context, createContext, Project, SourceData} from './types'
-import {createRuntime} from './engine/setup'
+import {createRuntime} from './setup'
 import {Orchestrator} from './engine/orchestrator'
 import {attachPluginEventListeners} from './plugins/manager'
 import {Executor} from './generics/executor'
@@ -11,7 +11,10 @@ export const runProject = async <T = SourceData>(data: T, project: Project, even
     stream: event,
   }) as Context<T>
 
-  const {pluginManager, loggerManager, executor} = await createRuntime(ctx)
+  const {pluginManager, loggerManager, executor} = await createRuntime({
+    context: ctx,
+    plugins: [],
+  })
 
   attachPluginEventListeners(loggerManager, ctx)
   attachPluginEventListeners(pluginManager, ctx)

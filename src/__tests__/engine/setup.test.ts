@@ -1,5 +1,5 @@
 import {DefaultExecutor} from '../../engine/executors/default'
-import {createRuntime, resolveExecutor, SetupContainer} from '../../engine/setup'
+import {createRuntime, resolveExecutor, SetupContainer} from '../../setup'
 import {Executor} from '../../generics/executor'
 import {Hooks, PluginManager} from '../../plugins'
 import {Block, Context, createContext} from '../../types'
@@ -10,21 +10,22 @@ test('createRuntime()', async () => {
   const use = jest.fn()
   const build = jest.fn().mockReturnValue({
     pluginManager: {},
+    loggerManager: {},
     executor: {},
   })
 
   const userCodeFn = jest.fn()
   const ctx = createContext({})
 
-  const {pluginManager, executor} = await createRuntime(
-    ctx,
-    [CorePlugin],
-    {
+  const {pluginManager, loggerManager, executor} = await createRuntime({
+    context: ctx,
+    plugins: [CorePlugin],
+    setupContainer: {
       use,
       build,
     } as any,
-    userCodeFn,
-  )
+    userSetupFn: userCodeFn,
+  })
 
   expect(use).toHaveBeenCalledTimes(1)
   expect(use).toHaveBeenCalledWith(CorePlugin)
@@ -35,6 +36,7 @@ test('createRuntime()', async () => {
   expect(userCodeFn).toHaveBeenCalledTimes(1)
 
   expect(pluginManager).toEqual({})
+  expect(loggerManager).toEqual({})
   expect(executor).toEqual({})
 })
 

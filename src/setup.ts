@@ -1,11 +1,11 @@
-import {Executor} from '../generics/executor'
-import {Logger} from '../generics/logger'
-import {LoggerManager} from '../loggers/manager'
-import {LoggerRegistry} from '../loggers/registry'
-import {PluginRegistry, PluginInput, PluginManager, Hooks} from '../plugins'
-import {Context} from '../types'
-import {Factory, FactoryInput} from '../types/core/factory'
-import {DefaultExecutor} from './executors/default'
+import {Executor} from './generics/executor'
+import {Logger} from './generics/logger'
+import {LoggerManager} from './loggers/manager'
+import {LoggerRegistry} from './loggers/registry'
+import {PluginRegistry, PluginInput, PluginManager, Hooks} from './plugins'
+import {Context} from './types'
+import {Factory, FactoryInput} from './types/core/factory'
+import {DefaultExecutor} from './engine/executors/default'
 
 export const loadUserSetup = async (context: Context, setup: SetupContainer) => {
   const userModule = await import(context.package!)
@@ -15,19 +15,25 @@ export const loadUserSetup = async (context: Context, setup: SetupContainer) => 
   }
 }
 
-export const createRuntime = async (
-  ctx: Context,
-  plugins: PluginInput[] = [],
-  setupContainer: SetupContainer = new SetupContainer(),
-  userSetupFn: (ctx: Context, setup: SetupContainer) => Promise<void> = loadUserSetup,
-) => {
+export const createRuntime = async (opts: {
+  context: Context
+  plugins?: PluginInput[]
+  loggers?: LoggerInput[]
+  setupContainer?: SetupContainer
+  userSetupFn?: (ctx: Context, setup: SetupContainer) => Promise<void>
+}) => {
+  const {context, plugins} = opts
+
+  const setupContainer = opts.setupContainer ?? new SetupContainer()
+  const userSetupFn = opts.userSetupFn ?? loadUserSetup
+
   // pre-loaded/internal plugins are registered first:
-  plugins.forEach((plugin) => setupContainer.use(plugin))
+  plugins?.forEach((plugin) => setupContainer.use(plugin))
 
   // call setup() in user code:
-  await userSetupFn(ctx, setupContainer)
+  await userSetupFn(context, setupContainer)
 
-  const {pluginManager, loggerManager, executor} = setupContainer.build(ctx)
+  const {pluginManager, loggerManager, executor} = setupContainer.build(context)
   return {pluginManager, loggerManager, executor}
 }
 

@@ -1,4 +1,4 @@
-import {buildFactories, LoggerInput, resolveFactory} from '../engine/setup'
+import {buildFactories, LoggerInput, resolveFactory} from '../setup'
 import {Logger} from '../generics/logger'
 import {Registry} from '../generics/registry'
 import {Context} from '../types'

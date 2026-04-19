@@ -1,5 +1,5 @@
 import {Hooks, PluginFactory, PluginInput} from '.'
-import {buildFactories, resolveFactory} from '../engine/setup'
+import {buildFactories, resolveFactory} from '../setup'
 import {Registry} from '../generics/registry'
 import {Block, Context, Project} from '../types'
 import {Attempt} from '../types/attempt'

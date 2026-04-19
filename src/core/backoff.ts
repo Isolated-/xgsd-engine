@@ -24,3 +24,5 @@ export const strategyMap: Record<string, (attempt: number, base?: number) => num
 export const getBackoffStrategy = (strategy: string) => {
   return strategyMap[strategy] || exponentialBackoff
 }
+
+export const DEFAULT_BACKOFF_STRATEGY = getBackoffStrategy('linear')

@@ -1,4 +1,4 @@
-import {WrappedError} from './wrapped-error'
+import {WrappedError} from './wrapped-error.js'
 
 export type RetryAttempt = {
   attempt: number

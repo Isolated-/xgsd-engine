@@ -1,13 +1,15 @@
 import {retry} from '../retry'
 import {RetryAttempt} from '../types/attempt'
 
+const backoff = (attempt: number) => 0
+
 describe('retry() - retry logic above execute()', () => {
   test('should return null after exhausting all retries', async () => {
     const mockFn = jest.fn(async () => {
       throw new Error('Fail')
     })
 
-    const result = await retry(1, mockFn, 3)
+    const result = await retry(1, mockFn, 3, {backoff})
 
     expect(mockFn).toHaveBeenCalledTimes(3)
     expect(result.data).toBeNull()
@@ -28,7 +30,7 @@ describe('retry() - retry logic above execute()', () => {
 
     const onAttempt = jest.fn()
 
-    await retry(1, mockFn, 3, {onAttempt})
+    await retry(1, mockFn, 3, {onAttempt, backoff})
 
     expect(onAttempt).toHaveBeenCalledTimes(3)
 
@@ -106,7 +108,7 @@ describe('retry() - retry logic above execute()', () => {
 
     const onAttempt = jest.fn()
 
-    await retry(1, mockFn, 3, {onAttempt})
+    await retry(1, mockFn, 3, {onAttempt, backoff})
 
     const lastCall = onAttempt.mock.calls[2][0] as RetryAttempt
 

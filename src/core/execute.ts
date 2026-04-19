@@ -1,7 +1,7 @@
-import {timeout} from './timeout'
-import {SourceData} from './types/data'
-import {RunFn} from './types/run'
-import {DEFAULT_ERROR_MESSAGE, DEFAULT_ERROR_NAME, DEFAULT_ERROR_STACK, WrappedError} from './types/wrapped-error'
+import {timeout} from './timeout.js'
+import {SourceData} from './types/data.js'
+import {RunFn} from './types/run.js'
+import {DEFAULT_ERROR_MESSAGE, DEFAULT_ERROR_NAME, DEFAULT_ERROR_STACK, WrappedError} from './types/wrapped-error.js'
 
 // move this when core is imported
 export function normalizeError<E extends WrappedError = WrappedError>(error: unknown): E {

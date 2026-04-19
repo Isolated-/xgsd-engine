@@ -32,7 +32,7 @@ export async function retry<T, R = T>(
       return {data: execution.data, error: null}
     }
 
-    const backoff = retries > 1 && !opts?.backoff ? DEFAULT_BACKOFF_STRATEGY : opts?.backoff
+    const backoff = opts?.backoff ?? (retries > 1 ? DEFAULT_BACKOFF_STRATEGY : undefined)
     const delay = backoff ? backoff(attempt) : 0
 
     if (opts?.onAttempt) {

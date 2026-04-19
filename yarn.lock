@@ -702,6 +702,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@oclif/prettier-config@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@oclif/prettier-config/-/prettier-config-0.2.1.tgz#1def9f38134f9bfb229257f48a35f7d0d183dc78"
+  integrity sha512-XB8kwQj8zynXjIIWRm+6gO/r8Qft2xKtwBMSmq1JRqtA6TpwpqECqiu8LosBCyg2JBXuUy2lU23/L98KIR7FrQ==
+
 "@rollup/rollup-android-arm-eabi@4.60.2":
   version "4.60.2"
   resolved "https://registry.yarnpkg.com/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.60.2.tgz#a19c645c375158cd5c50a344106f0fa18eb821c4"

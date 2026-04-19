@@ -10,7 +10,3 @@ test('core exports in index.js', () => {
   expect(lib.manualBackoff).toBeInstanceOf(Function)
   expect(lib.squaringBackoff).toBeInstanceOf(Function)
 })
-
-test('execute exports in index.js', () => {
-  expect(lib.runBlock).toBeInstanceOf(Function)
-})

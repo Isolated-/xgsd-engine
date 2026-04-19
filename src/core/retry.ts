@@ -1,7 +1,8 @@
-import {execute} from './execute'
-import {RetryAttempt} from './types/attempt'
-import {RunFn} from './types/run'
-import {WrappedError} from './types/wrapped-error'
+import {DEFAULT_BACKOFF_STRATEGY, getBackoffStrategy} from './backoff.js'
+import {execute} from './execute.js'
+import {RetryAttempt} from './types/attempt.js'
+import {RunFn} from './types/run.js'
+import {WrappedError} from './types/wrapped-error.js'
 
 /**
  * Retry a function call with exponential backoff.
@@ -31,7 +32,8 @@ export async function retry<T, R = T>(
       return {data: execution.data, error: null}
     }
 
-    const delay = opts?.backoff ? opts.backoff(attempt) : 0
+    const backoff = retries > 1 && !opts?.backoff ? DEFAULT_BACKOFF_STRATEGY : opts?.backoff
+    const delay = backoff ? backoff(attempt) : 0
 
     if (opts?.onAttempt) {
       opts.onAttempt({

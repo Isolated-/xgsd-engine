@@ -1,38 +1,59 @@
-import {DEFAULT_BACKOFF_STRATEGY, getBackoffStrategy} from './backoff.js'
 import {execute} from './execute.js'
 import {RetryAttempt} from './types/attempt.js'
+import {SourceData} from './types/data.js'
 import {RunFn} from './types/run.js'
 import {WrappedError} from './types/wrapped-error.js'
 
+export type RetryOpts = {
+  timeout?: number
+  backoff?: (attempt: number) => number
+  onAttempt?: (attempt: RetryAttempt) => void
+}
+
 /**
- * Retry a function call with exponential backoff.
- * @param {T} data - The input data for the function.
- * @param {RunFn<T, R>} fn - The function to retry.
- * @param {number} retries - The number of retry attempts.
- * @param {object} opts - Options for the retry behavior.
- * @returns {Promise<R|null>} The result of the function call or null if all retries fail.
+ * Retry a function call with configurable backoff and optional timeout.
+ *
+ * This utility repeatedly executes a function until it succeeds or the
+ * retry limit is reached. It uses the engine's `execute()` function
+ * internally, meaning all errors are automatically normalised into
+ * `WrappedError` format.
+ *
+ * @template T - Input data type (must extend SourceData)
+ *
+ * @param data - Input data passed to the function on each attempt
+ * @param fn - Async function to execute
+ * @param retries - Maximum number of attempts before giving up
+ * @param opts - Optional retry configuration
+ *
+ * @returns A promise resolving to either:
+ * - `{ data: result, error: null }` on success
+ * - `{ data: null, error: WrappedError }` if all retries fail
+ *
+ * @example
+ * ```ts
+ * await retry(
+ *   { value: 1 },
+ *   async (data) => ({ value: data.value + 1 }),
+ *   3,
+ *   {
+ *     backoff: exponentialBackoff,
+ *     onAttempt: (a) => console.log(a.attempt),
+ *   }
+ * )
+ * ```
  */
-export async function retry<T, R = T>(
-  data: T,
-  fn: RunFn<T, R>,
-  retries: number,
-  opts?: {
-    timeout?: number
-    backoff?: (attempt: number) => number
-    onAttempt?: (attempt: RetryAttempt) => void
-  },
-) {
+export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries: number, opts?: RetryOpts) {
   let attempt = 0
   let finalError: WrappedError | null = null
 
   while (attempt < retries) {
-    const execution = await execute<T, R, WrappedError>(data, fn, opts?.timeout)
+    const execution = await execute<T, WrappedError>(data, fn, opts?.timeout)
 
     if (!execution.error) {
       return {data: execution.data, error: null}
     }
 
-    const backoff = opts?.backoff ?? (retries > 1 ? DEFAULT_BACKOFF_STRATEGY : undefined)
+    const backoff = opts?.backoff
     const delay = backoff ? backoff(attempt) : 0
 
     if (opts?.onAttempt) {

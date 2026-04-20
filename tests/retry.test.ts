@@ -8,7 +8,7 @@ describe('retry() - retry logic above execute()', () => {
       throw new Error('Fail')
     })
 
-    const result = await retry(1, mockFn, 3, {backoff})
+    const result = await retry({data: 1}, mockFn, 3, {backoff})
 
     expect(mockFn).toHaveBeenCalledTimes(3)
     expect(result.data).toBeNull()
@@ -16,9 +16,9 @@ describe('retry() - retry logic above execute()', () => {
   })
 
   test('should return error: null on success', async () => {
-    const mockFn = jest.fn(async () => 1)
-    const result = await retry(1, mockFn, 3)
-    expect(result.data).toEqual(1)
+    const mockFn = jest.fn(async (data) => data)
+    const result = await retry({data: 1}, mockFn, 3)
+    expect(result.data).toEqual({data: 1})
     expect(result.error).toBeNull()
   })
 
@@ -29,7 +29,7 @@ describe('retry() - retry logic above execute()', () => {
 
     const onAttempt = jest.fn()
 
-    await retry(1, mockFn, 3, {onAttempt, backoff})
+    await retry({data: 1}, mockFn, 3, {onAttempt, backoff})
 
     expect(onAttempt).toHaveBeenCalledTimes(3)
 
@@ -75,7 +75,7 @@ describe('retry() - retry logic above execute()', () => {
 
     const backoff = jest.fn((attempt: number) => attempt * 100)
 
-    await retry(1, mockFn, 3, {backoff})
+    await retry({data: 1}, mockFn, 3, {backoff})
 
     expect(backoff).toHaveBeenCalledTimes(3)
     expect(backoff).toHaveBeenNthCalledWith(1, 0)
@@ -95,7 +95,7 @@ describe('retry() - retry logic above execute()', () => {
       expect(attempt.nextMs).toBe(expected)
     })
 
-    await retry(1, mockFn, 3, {backoff, onAttempt})
+    await retry({data: 1}, mockFn, 3, {backoff, onAttempt})
 
     expect(onAttempt).toHaveBeenCalledTimes(3)
   })
@@ -107,7 +107,7 @@ describe('retry() - retry logic above execute()', () => {
 
     const onAttempt = jest.fn()
 
-    await retry(1, mockFn, 3, {onAttempt, backoff})
+    await retry({data: 1}, mockFn, 3, {onAttempt, backoff})
 
     const lastCall = onAttempt.mock.calls[2][0] as RetryAttempt
 

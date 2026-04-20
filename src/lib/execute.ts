@@ -5,37 +5,60 @@ import {DEFAULT_ERROR_MESSAGE, DEFAULT_ERROR_NAME, DEFAULT_ERROR_STACK, WrappedE
 
 // move this when core is imported
 export function normalizeError<E extends WrappedError = WrappedError>(error: unknown): E {
-  // default fallback (covers null/undefined/non-object)
-  let wrapped: WrappedError = {
-    original: error,
-    name: DEFAULT_ERROR_NAME,
-    message: DEFAULT_ERROR_MESSAGE,
-    stack: DEFAULT_ERROR_STACK,
+  // null / undefined
+  if (error === null) {
+    return {
+      original: null,
+      name: DEFAULT_ERROR_NAME,
+      message: DEFAULT_ERROR_MESSAGE,
+      stack: DEFAULT_ERROR_STACK,
+    } as E
   }
 
-  // object-like errors (typical case: Error instances)
-  if (typeof error === 'object' && error !== null) {
-    const err = error as any
-
-    wrapped = {
-      original: error,
-      name: err.name || 'Error',
-      message: err.message || 'No message provided',
-      stack: err.stack || 'No stack available',
-    }
+  if (error === undefined) {
+    return {
+      original: undefined,
+      name: DEFAULT_ERROR_NAME,
+      message: DEFAULT_ERROR_MESSAGE,
+      stack: DEFAULT_ERROR_STACK,
+    } as E
   }
 
-  // string errors (yes, people still throw these…)
+  // string errors
   if (typeof error === 'string') {
-    wrapped = {
+    return {
       original: error,
       name: error,
       message: error,
       stack: 'unknown',
-    }
+    } as E
   }
 
-  return wrapped as E
+  // object-like errors
+  if (typeof error === 'object') {
+    const err = error as any
+
+    const message = typeof err.message === 'string' ? err.message : 'No message provided'
+
+    const name = typeof err.name === 'string' ? err.name : 'Error'
+
+    const stack = typeof err.stack === 'string' ? err.stack : 'No stack available'
+
+    return {
+      original: error,
+      name,
+      message,
+      stack,
+    } as E
+  }
+
+  // fallback (numbers, symbols, etc.)
+  return {
+    original: error,
+    name: DEFAULT_ERROR_NAME,
+    message: DEFAULT_ERROR_MESSAGE,
+    stack: DEFAULT_ERROR_STACK,
+  } as E
 }
 
 /**
@@ -50,11 +73,11 @@ export function normalizeError<E extends WrappedError = WrappedError>(error: unk
  *  @note simplified when importing to @xgsd/core
  *  (no longer uses transformer() or ms library)
  */
-export async function execute<
-  T extends SourceData = SourceData,
-  R extends SourceData = SourceData,
-  E extends WrappedError = WrappedError,
->(data: T, fn: RunFn<T, R>, ms?: number): Promise<{data: R | null; error: E | null}> {
+export async function execute<T extends SourceData = SourceData, E extends WrappedError = WrappedError>(
+  data: T,
+  fn: RunFn<T>,
+  ms?: number,
+): Promise<{data: T | null; error: E | null}> {
   try {
     const result = await timeout(ms || 100, () => fn(data))
 

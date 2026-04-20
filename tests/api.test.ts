@@ -5,8 +5,4 @@ test('core exports in index.js', () => {
   expect(lib.execute).toBeInstanceOf(Function)
   expect(lib.runWithConcurrency).toBeInstanceOf(Function)
   expect(lib.timeout).toBeInstanceOf(Function)
-  expect(lib.exponentialBackoff).toBeInstanceOf(Function)
-  expect(lib.linearBackoff).toBeInstanceOf(Function)
-  expect(lib.manualBackoff).toBeInstanceOf(Function)
-  expect(lib.squaringBackoff).toBeInstanceOf(Function)
 })

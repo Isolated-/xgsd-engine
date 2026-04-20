@@ -1,3 +1,5 @@
+import {SourceData} from './data.js'
+
 /**
  * RunFn is the core execution signature used by the engine.
  *
@@ -18,4 +20,4 @@
  * @template T input data type
  * @template R return data type
  */
-export type RunFn<T, R> = (data: T) => Promise<R>
+export type RunFn<T extends SourceData> = (data: T) => Promise<T>

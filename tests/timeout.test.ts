@@ -1,4 +1,4 @@
-import {timeout} from '../timeout'
+import {timeout} from '../src/index.js'
 
 describe('timeout', () => {
   beforeEach(() => {

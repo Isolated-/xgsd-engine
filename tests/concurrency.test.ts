@@ -1,4 +1,4 @@
-import {runWithConcurrency} from '../concurrency'
+import {runWithConcurrency} from '../src/index.js'
 
 describe('runWithConcurrency()', () => {
   test('should process items with concurrency limit', async () => {

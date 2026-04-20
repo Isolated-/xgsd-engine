@@ -1,5 +1,4 @@
-import {retry} from '../retry'
-import {RetryAttempt} from '../types/attempt'
+import {retry, RetryAttempt} from '../src/index.js'
 
 const backoff = (attempt: number) => 0
 

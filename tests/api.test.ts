@@ -1,4 +1,4 @@
-import * as lib from '../index.js'
+import * as lib from '../src/index.js'
 
 test('core exports in index.js', () => {
   expect(lib.retry).toBeInstanceOf(Function)

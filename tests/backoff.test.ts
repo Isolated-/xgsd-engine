@@ -5,7 +5,7 @@ import {
   manualBackoff,
   strategyMap,
   getBackoffStrategy,
-} from '../backoff'
+} from '../src/index.js'
 
 describe('backoff strategies', () => {
   describe('linearBackoff', () => {

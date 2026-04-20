@@ -1,5 +1,4 @@
-import {execute, normalizeError} from '../execute'
-import {DEFAULT_ERROR_MESSAGE, DEFAULT_ERROR_NAME, DEFAULT_ERROR_STACK} from '../types/wrapped-error'
+import {DEFAULT_ERROR_MESSAGE, DEFAULT_ERROR_NAME, DEFAULT_ERROR_STACK, execute, normalizeError} from '../src/index.js'
 
 describe('normalizeError', () => {
   test('normalizes Error instances correctly', () => {

@@ -161,6 +161,8 @@ This package is designed for:
 
 It is not intended for direct end-user application logic.
 
+Some utilities (such as `runWithConcurrency()` or `timeout()`) may be useful in isolation, but they are exposed primarily to support higher-level orchestration rather than as a general-purpose utility library.
+
 ---
 
 ## Mental model

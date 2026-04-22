@@ -1,6 +1,6 @@
 import {WrappedError, DEFAULT_ERROR_NAME, DEFAULT_ERROR_MESSAGE, DEFAULT_ERROR_STACK} from './types/wrapped-error.js'
 
-export function normalizeError<E extends WrappedError = WrappedError>(error: unknown): E {
+export function normaliseError<E extends WrappedError = WrappedError>(error: unknown): E {
   // null / undefined
   if (error === null) {
     return {

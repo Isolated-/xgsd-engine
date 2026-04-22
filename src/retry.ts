@@ -46,6 +46,16 @@ export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries
   let attempt = 0
   let finalError: WrappedError | null = null
 
+  const backoff = opts?.backoff
+
+  if (retries === 0) {
+    throw new Error("retry() doesn't support 0 retries, use execute()")
+  }
+
+  if (!backoff && retries > 1) {
+    throw new Error('backoff method must be provided')
+  }
+
   while (attempt < retries) {
     const execution = await execute<T, WrappedError>(data, fn, opts?.timeout)
 
@@ -53,8 +63,7 @@ export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries
       return {data: execution.data, error: null}
     }
 
-    const backoff = opts?.backoff
-    const delay = backoff ? backoff(attempt) : 0
+    const delay = retries > 1 ? backoff!(attempt) : 0
 
     if (opts?.onAttempt) {
       opts.onAttempt({

@@ -1,4 +1,4 @@
-aname: CI & Release (Stable)
+name: CI & Release (Stable)
 
 on:
   release:

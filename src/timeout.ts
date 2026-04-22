@@ -10,3 +10,7 @@ export async function timeout<T>(ms: number, task: () => Promise<T>): Promise<T>
     if (timer) clearTimeout(timer)
   })
 }
+
+export function withTimeout<T>(ms: number) {
+  return (fn: () => Promise<T>) => timeout(ms, fn)
+}

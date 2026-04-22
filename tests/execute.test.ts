@@ -1,10 +1,11 @@
-import {DEFAULT_ERROR_MESSAGE, DEFAULT_ERROR_NAME, DEFAULT_ERROR_STACK, execute, normalizeError} from '../src/index.js'
+import {DEFAULT_ERROR_MESSAGE, DEFAULT_ERROR_NAME, DEFAULT_ERROR_STACK, execute} from '../src/index.js'
+import {normaliseError} from '../src/error.js'
 
 describe('normalizeError', () => {
   test('normalizes Error instances correctly', () => {
     const error = new Error('Something failed')
 
-    const result = normalizeError(error)
+    const result = normaliseError(error)
 
     expect(result.name).toBe('Error')
     expect(result.message).toBe('Something failed')
@@ -16,7 +17,7 @@ describe('normalizeError', () => {
     const error = new Error('Boom')
     error.name = 'CustomError'
 
-    const result = normalizeError(error)
+    const result = normaliseError(error)
 
     expect(result.name).toBe('CustomError')
     expect(result.message).toBe('Boom')
@@ -24,7 +25,7 @@ describe('normalizeError', () => {
   })
 
   test('handles string errors', () => {
-    const result = normalizeError('Something broke')
+    const result = normaliseError('Something broke')
 
     expect(result.name).toBe('Something broke')
     expect(result.message).toBe('Something broke')
@@ -33,7 +34,7 @@ describe('normalizeError', () => {
   })
 
   test('handles null', () => {
-    const result = normalizeError(null)
+    const result = normaliseError(null)
 
     expect(result.name).toBe('UnknownError')
     expect(result.message).toBe('Unknown error')
@@ -42,7 +43,7 @@ describe('normalizeError', () => {
   })
 
   test('handles undefined', () => {
-    const result = normalizeError(undefined)
+    const result = normaliseError(undefined)
 
     expect(result.name).toBe('UnknownError')
     expect(result.message).toBe('Unknown error')
@@ -50,7 +51,7 @@ describe('normalizeError', () => {
   })
 
   test('handles non-error objects', () => {
-    const result = normalizeError({foo: 'bar'})
+    const result = normaliseError({foo: 'bar'})
 
     expect(result.name).toBe('Error')
     expect(result.message).toBe('No message provided')
@@ -59,7 +60,7 @@ describe('normalizeError', () => {
   })
 
   test('falls back when partial error fields are missing', () => {
-    const result = normalizeError({message: 'partial'})
+    const result = normaliseError({message: 'partial'})
 
     expect(result.name).toBe('Error')
     expect(result.message).toBe('partial')

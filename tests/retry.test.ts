@@ -1,4 +1,4 @@
-import {retry, RetryAttempt} from '../src/index.js'
+import {retry, RetryAttempt, SourceData, withTimeout} from '../src/index.js'
 
 const backoff = (attempt: number) => 0
 
@@ -24,6 +24,43 @@ describe('retry() - retry logic above execute()', () => {
 
     // doesn't call backoff
     expect(backoff).not.toHaveBeenCalled()
+  })
+
+  test('should allow a custom timeout method to be passed in', async () => {
+    const timeoutWrapper = withTimeout<SourceData>(1)
+
+    const mockFn = jest.fn(() => new Promise(() => {})) as any // never resolves
+
+    const onAttempt = jest.fn()
+
+    const result = await retry({data: 1}, mockFn, 1, {
+      onAttempt,
+      timeoutWrapper,
+    })
+
+    // function should have been attempted 3 times
+    expect(mockFn).toHaveBeenCalledTimes(1)
+
+    // onAttempt should be called for each failed attempt
+    expect(onAttempt).toHaveBeenCalledTimes(1)
+
+    // final result should be an error
+    expect(result.data).toBeNull()
+    expect(result.error).toBeDefined()
+
+    // sanity check: error should be timeout-related
+    expect(result.error?.message).toBe('Timeout')
+
+    // optional: validate onAttempt payload shape
+    expect(onAttempt).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        error: expect.objectContaining({
+          message: 'Timeout',
+        }),
+        finalAttempt: true,
+        attempt: 0,
+      }),
+    )
   })
 
   test('should call onAttempt with correct parameters', async () => {

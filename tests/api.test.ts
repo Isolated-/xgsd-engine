@@ -5,4 +5,5 @@ test('core exports in index.js', () => {
   expect(lib.execute).toBeInstanceOf(Function)
   expect(lib.runWithConcurrency).toBeInstanceOf(Function)
   expect(lib.timeout).toBeInstanceOf(Function)
+  expect(lib.withTimeout).toBeInstanceOf(Function)
 })

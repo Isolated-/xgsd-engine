@@ -1,12 +1,21 @@
-export async function runWithConcurrency<T>(
+import {AsyncWorker} from './types/worker'
+
+/**
+ *  Runs an AsyncWorker with concurrency
+ *
+ *  @param items
+ *  @param limit
+ *  @param worker
+ */
+export async function runWithConcurrency<T = unknown, R = unknown>(
   items: T[],
   limit: number,
-  worker: (item: T, index: number) => Promise<any>,
+  worker: AsyncWorker<T, R>,
 ): Promise<void> {
   const executing: Promise<any>[] = []
 
   for (let i = 0; i < items.length; i++) {
-    const p = worker(items[i], i)
+    const p = worker(items[i], items[i + 1], i)
 
     // When finished, remove from executing
     const e = p.then(() => {

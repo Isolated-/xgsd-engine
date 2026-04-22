@@ -1,11 +1,12 @@
 import {execute} from './execute.js'
+import {withTimeout} from './timeout.js'
 import {RetryAttempt} from './types/attempt.js'
 import {SourceData} from './types/data.js'
 import {RunFn} from './types/run.js'
 import {WrappedError} from './types/wrapped-error.js'
 
-export type RetryOpts = {
-  timeout?: number
+export type RetryOpts<T> = {
+  timeoutWrapper?: (fn: () => Promise<T>) => Promise<T>
   backoff?: (attempt: number) => number
   onAttempt?: (attempt: RetryAttempt) => void
 }
@@ -42,7 +43,7 @@ export type RetryOpts = {
  * )
  * ```
  */
-export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries: number, opts?: RetryOpts) {
+export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries: number, opts?: RetryOpts<T>) {
   let attempt = 0
   let finalError: WrappedError | null = null
 
@@ -57,7 +58,7 @@ export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries
   }
 
   while (attempt < retries) {
-    const execution = await execute<T, WrappedError>(data, fn, opts?.timeout)
+    const execution = await execute<T, WrappedError>(data, fn, opts?.timeoutWrapper)
 
     if (!execution.error) {
       return {data: execution.data, error: null}

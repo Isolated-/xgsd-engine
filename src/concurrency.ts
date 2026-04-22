@@ -15,6 +15,8 @@ export async function runWithConcurrency<T = unknown, R = unknown>(
   const executing: Promise<any>[] = []
 
   for (let i = 0; i < items.length; i++) {
+    // worker is now called with the next worker
+    // to provide an easier way of accessing it
     const p = worker(items[i], items[i + 1], i)
 
     // When finished, remove from executing

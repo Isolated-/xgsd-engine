@@ -19,6 +19,31 @@ describe('runWithConcurrency()', () => {
     expect(processed).toEqual(items)
   })
 
+  // added in v0.1.1
+  test('should allow referance and mutation of the next item', async () => {
+    const objs = [
+      {
+        name: '1',
+      },
+      {
+        name: '2',
+      },
+    ]
+
+    const results: any[] = []
+
+    const worker = async (curr: any, next: any, idx: number) => {
+      if (next) {
+        next.name = '3'
+      }
+
+      results.push(curr)
+    }
+
+    await runWithConcurrency(objs, 1, worker)
+    expect(results[1].name).toBe('3')
+  })
+
   test('respects concurrency limit', async () => {
     const items = Array.from({length: 5}, (_, i) => i)
     const concurrent: number[] = []

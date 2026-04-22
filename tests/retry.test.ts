@@ -17,9 +17,13 @@ describe('retry() - retry logic above execute()', () => {
 
   test('should return error: null on success', async () => {
     const mockFn = jest.fn(async (data) => data)
-    const result = await retry({data: 1}, mockFn, 3)
+    const backoff = jest.fn()
+    const result = await retry({data: 1}, mockFn, 3, {backoff})
     expect(result.data).toEqual({data: 1})
     expect(result.error).toBeNull()
+
+    // doesn't call backoff
+    expect(backoff).not.toHaveBeenCalled()
   })
 
   test('should call onAttempt with correct parameters', async () => {
@@ -113,5 +117,24 @@ describe('retry() - retry logic above execute()', () => {
 
     expect(lastCall.finalAttempt).toBe(true)
     expect(lastCall.attempt).toBe(2)
+  })
+
+  test('throws an Error when no backoff method is provided and retries > 1', async () => {
+    const mockFn = jest.fn(async () => {
+      throw new Error('fail')
+    })
+
+    const onAttempt = jest.fn()
+    await expect(retry({data: 1}, mockFn, 3, {onAttempt})).rejects.toThrow()
+    await expect(retry({data: 1}, mockFn, 1, {onAttempt})).resolves.not.toThrow()
+  })
+
+  test('throws an Error when retries = 0', async () => {
+    const mockFn = jest.fn(async () => {
+      throw new Error('fail')
+    })
+
+    const onAttempt = jest.fn()
+    await expect(retry({data: 1}, mockFn, 0, {onAttempt})).rejects.toThrow()
   })
 })

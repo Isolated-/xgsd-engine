@@ -2,7 +2,7 @@
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)  
 [![Version](https://img.shields.io/npm/v/@xgsd/engine.svg)](https://npmjs.org/package/@xgsd/engine)  
-[![CI & Release](https://github.com/Isolated-/xgsd-engine/actions/workflows/release.yml/badge.svg)](https://github.com/Isolated-/xgsd-runtime/actions/workflows/release.yml)
+[![CI & Release](https://github.com/Isolated-/xgsd-engine/actions/workflows/release.yml/badge.svg)](https://github.com/Isolated-/xgsd-engine/actions/workflows/release.yml)
 
 A small, deterministic execution engine built from pure functions.
 

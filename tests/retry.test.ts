@@ -3,6 +3,19 @@ import {retry, RetryAttempt, SourceData, withTimeout} from '../src/index.js'
 const backoff = (attempt: number) => 0
 
 describe('retry() - retry logic above execute()', () => {
+  test('when retries = 1 then delay = 0', async () => {
+    const mockFn = jest.fn(async () => {
+      throw new Error('Fail')
+    })
+
+    await retry({data: 1}, mockFn, 1, {
+      backoff,
+      onAttempt: (a) => {
+        expect(a.nextMs).toEqual(0)
+      },
+    })
+  })
+
   test('should return null after exhausting all retries', async () => {
     const mockFn = jest.fn(async () => {
       throw new Error('Fail')
@@ -154,24 +167,5 @@ describe('retry() - retry logic above execute()', () => {
 
     expect(lastCall.finalAttempt).toBe(true)
     expect(lastCall.attempt).toBe(2)
-  })
-
-  test('throws an Error when no backoff method is provided and retries > 1', async () => {
-    const mockFn = jest.fn(async () => {
-      throw new Error('fail')
-    })
-
-    const onAttempt = jest.fn()
-    await expect(retry({data: 1}, mockFn, 3, {onAttempt})).rejects.toThrow()
-    await expect(retry({data: 1}, mockFn, 1, {onAttempt})).resolves.not.toThrow()
-  })
-
-  test('throws an Error when retries = 0', async () => {
-    const mockFn = jest.fn(async () => {
-      throw new Error('fail')
-    })
-
-    const onAttempt = jest.fn()
-    await expect(retry({data: 1}, mockFn, 0, {onAttempt})).rejects.toThrow()
   })
 })

@@ -49,14 +49,6 @@ export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries
 
   const backoff = opts?.backoff
 
-  if (retries === 0) {
-    throw new Error("retry() doesn't support 0 retries, use execute()")
-  }
-
-  if (!backoff && retries > 1) {
-    throw new Error('backoff method must be provided')
-  }
-
   while (attempt < retries) {
     const execution = await execute<T, WrappedError>(data, fn, opts?.timeoutWrapper)
 
@@ -64,6 +56,7 @@ export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries
       return {data: execution.data, error: null}
     }
 
+    const final = attempt === retries - 1
     const delay = retries > 1 ? backoff!(attempt) : 0
 
     if (opts?.onAttempt) {
@@ -71,13 +64,15 @@ export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries
         attempt,
         error: execution.error!,
         maxRetries: retries,
-        finalAttempt: attempt === retries - 1,
+        finalAttempt: final,
         nextMs: delay,
       })
     }
 
     // hang until next timeout ms is reached
-    if (delay > 0) {
+    // checking for final prevents hanging
+    // when there isn't another attempt coming
+    if (delay > 0 && !final) {
       await new Promise((r) => setTimeout(r, delay))
     }
 

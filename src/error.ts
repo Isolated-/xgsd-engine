@@ -34,7 +34,7 @@ export function normaliseError<E extends WrappedError = WrappedError>(error: unk
   if (typeof error === 'object') {
     const err = error as any
 
-    const message = typeof err.message === 'string' ? err.message : 'No message provided'
+    const message = typeof err.message === 'string' ? err.message : JSON.stringify(error)
 
     const name = typeof err.name === 'string' ? err.name : 'Error'
 

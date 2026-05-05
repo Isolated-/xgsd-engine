@@ -1,6 +1,6 @@
 {
   "name": "@xgsd/engine",
-  "description": "lightweight execution/orchestration library used by xGSD apps",
+  "description": "A small, deterministic execution engine built from pure functions.",
   "version": "0.1.2",
   "type": "module",
   "main": "./dist/index.js",

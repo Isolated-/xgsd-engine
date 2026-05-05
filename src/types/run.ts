@@ -20,4 +20,4 @@ import {SourceData} from './data.js'
  * @template T input data type
  * @template R return data type
  */
-export type RunFn<T extends SourceData> = (data: T) => Promise<T>
+export type RunFn<T extends SourceData, R extends SourceData = T> = (data: T) => Promise<R>

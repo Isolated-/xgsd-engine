@@ -1,5 +1,4 @@
 import {execute} from './execute.js'
-import {withTimeout} from './timeout.js'
 import {RetryAttempt} from './types/attempt.js'
 import {SourceData} from './types/data.js'
 import {RunFn} from './types/run.js'

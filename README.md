@@ -15,6 +15,7 @@ It is:
 - framework-agnostic
 - side-effect free
 - designed to remain stable over time
+- pure JavaScript
 
 It focuses only on **execution logic**, not runtime orchestration or system design.
 

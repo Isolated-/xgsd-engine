@@ -20,11 +20,15 @@ import {WrappedError} from './types/wrapped-error.js'
  *  @note simplified when importing to @xgsd/engine
  *  (no longer uses transformer() or ms library)
  */
-export async function execute<T extends SourceData = SourceData, E extends WrappedError = WrappedError>(
+export async function execute<
+  T extends SourceData = SourceData,
+  E extends WrappedError = WrappedError,
+  R extends SourceData = T,
+>(
   data: T,
-  fn: RunFn<T>,
-  wrapper?: (fn: () => Promise<T>) => Promise<T>,
-): Promise<{data: T | null; error: E | null}> {
+  fn: RunFn<T, R>,
+  wrapper?: (fn: () => Promise<R>) => Promise<R>,
+): Promise<{data: R | null; error: E | null}> {
   try {
     const run = () => fn(data)
 

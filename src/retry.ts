@@ -42,14 +42,19 @@ export type RetryOpts<T> = {
  * )
  * ```
  */
-export async function retry<T extends SourceData>(data: T, fn: RunFn<T>, retries: number, opts?: RetryOpts<T>) {
+export async function retry<T extends SourceData = SourceData, R extends SourceData = T>(
+  data: T,
+  fn: RunFn<T, R>,
+  retries: number,
+  opts?: RetryOpts<R>,
+) {
   let attempt = 0
   let finalError: WrappedError | null = null
 
   const backoff = opts?.backoff
 
   while (attempt < retries) {
-    const execution = await execute<T, WrappedError>(data, fn, opts?.timeoutWrapper)
+    const execution = await execute<T, WrappedError, R>(data, fn, opts?.timeoutWrapper)
 
     if (!execution.error) {
       return {data: execution.data, error: null}

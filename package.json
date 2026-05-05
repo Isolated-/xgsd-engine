@@ -1,7 +1,7 @@
 {
   "name": "@xgsd/engine",
   "description": "A small, deterministic execution engine built from pure functions.",
-  "version": "0.1.2",
+  "version": "1.0.0-rc1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
